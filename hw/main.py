@@ -2,11 +2,18 @@ from wine import Wine
 from beer import Beer
 from market import Market
 
-"""
-TODO: Доработать заготовки классов вина (Wine), пива (Beer) и магазина (Market) таким образом, чтобы через класс Market можно было:
+if __name__ == '__main__':
+    beers = [Beer('Weissbier', 1), Beer('Ale', 2), Beer('Stout', 3), Beer('lager', 4)]
+    wines = [Wine('Tempranillo', 1), Wine('Sauvignon blanc', 2), Wine('Carmenere', 4)]
+    market = Market(beers=beers, wines=wines)
 
-    * получить список всех напитков (вина и пива) отсортированный по наименованию
-    * проверить наличие напитка в магазине (за время О(1))
-    * получить список напитков (вина и пива) в указанном диапазоне даты производства
-    * (*) написать свой декоратор, который бы логировал начало выполнения метода и выводил время выполнения
-"""
+    assert(market.has_drink_with_title('Lager'))
+    assert(not market.has_drink_with_title('Lagger'))
+    assert([x.title for x in market.get_drinks_sorted_by_title()] ==
+          ['Ale', 'Carmenere', 'Sauvignon blanc', 'Stout', 'Tempranillo', 'Weissbier', 'lager'])
+    assert(market.get_drinks_by_production_date(from_date=6, to_date=6) == [])
+    assert(set([x.title for x in market.get_drinks_by_production_date(from_date=1, to_date=3)]) ==
+          set(['Weissbier', 'Tempranillo', 'Ale', 'Sauvignon blanc', 'Stout']))
+    
+    market = Market(beers=[Beer('Beer' + str(i), i) for i in range(500_000)])
+    market.get_drinks_sorted_by_title()
