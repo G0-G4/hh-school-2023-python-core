@@ -1,8 +1,15 @@
 from timer import time_it
 
+
 class Market:
     def __init__(self, wines: list = [], beers: list = []) -> None:
-        self.store = {drink.title.lower() : drink for drink in wines + beers}
+        self.no_names = []
+        self.store = {}
+        for drink in wines + beers:
+            if drink.title is not None:
+                self.store[drink.title] = drink
+            else:
+                self.no_names.append(drink)
 
     def has_drink_with_title(self, title=None) -> bool:
         """
@@ -11,7 +18,9 @@ class Market:
         :param title:
         :return: True|False
         """
-        return title.lower() in self.store
+        if title is not None:
+            return title in self.store
+        return len(self.no_names) != None
 
     @time_it
     def get_drinks_sorted_by_title(self) -> list:
@@ -20,7 +29,7 @@ class Market:
 
         :return: list
         """
-        return list(sorted(self.store.values(), key = lambda x: x.title))
+        return list(sorted(self.store.values(), key = lambda drink: drink.title)) + self.no_names
 
     def get_drinks_by_production_date(self, from_date=None, to_date=None) -> list:
         """
@@ -28,4 +37,9 @@ class Market:
 
         :return: list
         """
-        return list(filter(lambda x: from_date <= x.production_date <= to_date, self.store.values()))
+        res = list(self.store.values()) + self.no_names
+        if from_date:
+            res = list(filter(lambda drink: drink.production_date is not None and from_date <= drink.production_date, res))
+        if to_date:
+            res = list(filter(lambda drink: drink.production_date is not None and drink.production_date <= to_date, res))
+        return res
